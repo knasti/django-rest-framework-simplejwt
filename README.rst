@@ -1,17 +1,16 @@
 Simple JWT
 ==========
 
-A JSON Web Token authentication plugin for the `Django REST Framework
-<http://www.django-rest-framework.org/>`__.
-
-.. image:: https://circleci.com/gh/davesque/django-rest-framework-simplejwt.svg?style=shield
-  :target: https://circleci.com/gh/davesque/django-rest-framework-simplejwt
-.. image:: https://codecov.io/gh/davesque/django-rest-framework-simplejwt/branch/master/graph/badge.svg
-  :target: https://codecov.io/gh/davesque/django-rest-framework-simplejwt
+.. image:: https://circleci.com/gh/SimpleJWT/django-rest-framework-simplejwt.svg?style=shield
+  :target: https://circleci.com/gh/SimpleJWT/django-rest-framework-simplejwt
+.. image:: https://codecov.io/gh/SimpleJWT/django-rest-framework-simplejwt/branch/master/graph/badge.svg
+  :target: https://codecov.io/gh/SimpleJWT/django-rest-framework-simplejwt
 .. image:: https://img.shields.io/pypi/v/djangorestframework-simplejwt.svg
   :target: https://pypi.python.org/pypi/djangorestframework-simplejwt
 .. image:: https://img.shields.io/pypi/pyversions/djangorestframework-simplejwt.svg
   :target: https://pypi.python.org/pypi/djangorestframework-simplejwt
+.. image:: https://readthedocs.org/projects/django-rest-framework-simplejwt/badge/?version=latest
+  :target: https://django-rest-framework-simplejwt.readthedocs.io/en/latest/
 
 LOOKING FOR MAINTAINERS
 -----------------------
@@ -355,11 +354,8 @@ SLIDING_TOKEN_LIFETIME
   current UTC time during token generation to obtain the token's default "exp"
   claim value.  More about this in the "Sliding tokens" section below.
 
-SLIDING_TOKEN_REFRESH_LIFETIME
-  A ``datetime.timedelta`` object which specifies how long sliding tokens are
-  valid to be refreshed.  This ``timedelta`` value is added to the current UTC
-  time during token generation to obtain the token's default "exp" claim value.
-  More about this in the "Sliding tokens" section below.
+For full documentation, visit `django-rest-framework-simplejwt.readthedocs.io
+<https://django-rest-framework-simplejwt.readthedocs.io/en/latest/>`__.
 
 SLIDING_TOKEN_REFRESH_EXP_CLAIM
   The claim name that is used to store the expiration time of a sliding token's
@@ -625,10 +621,5 @@ you're testing against multiple versions of Python.  Next, run tox:
 Acknowledgments
 ---------------
 
-This project borrows code from the `Django REST Framework
-<https://github.com/encode/django-rest-framework/>`__ as well as concepts from
-the implementation of another JSON web token library for the Django REST
-Framework, `django-rest-framework-jwt
-<https://github.com/GetBlimp/django-rest-framework-jwt>`__.  The licenses from
-both of those projects have been included in this repository in the "licenses"
-directory.
+For more information, see `here
+<https://github.com/SimpleJWT/django-rest-framework-simplejwt/issues/207>`__.
