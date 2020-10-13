@@ -73,9 +73,10 @@ class TokenCookieViewMixin:
         return request
 
     def set_auth_cookies(self, response, data):
+        expires = self.get_refresh_token_expiration()
         response.set_cookie(
             api_settings.AUTH_COOKIE, data['access'],
-            expires=self.get_access_token_expiration(),
+            expires=expires,
             domain=api_settings.AUTH_COOKIE_DOMAIN,
             path=api_settings.AUTH_COOKIE_PATH,
             secure=api_settings.AUTH_COOKIE_SECURE or None,
@@ -85,7 +86,7 @@ class TokenCookieViewMixin:
         if 'refresh' in data:
             response.set_cookie(
                 '{}_refresh'.format(api_settings.AUTH_COOKIE), data['refresh'],
-                expires=self.get_refresh_token_expiration(),
+                expires=expires,
                 domain=api_settings.AUTH_COOKIE_DOMAIN,
                 path=reverse(self.token_refresh_view_name),
                 secure=api_settings.AUTH_COOKIE_SECURE or None,
@@ -97,8 +98,8 @@ class TokenCookieViewMixin:
     def get_refresh_token_expiration(self):
         return datetime.now() + api_settings.REFRESH_TOKEN_LIFETIME
 
-    def get_access_token_expiration(self):
-        return datetime.now() + api_settings.ACCESS_TOKEN_LIFETIME
+    # def get_access_token_expiration(self):
+    #     return datetime.now() + api_settings.ACCESS_TOKEN_LIFETIME
 
 
 class TokenObtainPairView(TokenCookieViewMixin, TokenViewBase):
