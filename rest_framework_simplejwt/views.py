@@ -86,11 +86,11 @@ class TokenCookieViewMixin:
             response.set_cookie(
                 '{}_refresh'.format(api_settings.AUTH_COOKIE), data['refresh'],
                 expires=self.get_refresh_token_expiration(),
-                domain=None,
-                path=reverse(self.token_refresh_view_name),
+                domain=api_settings.AUTH_COOKIE_DOMAIN,
+                path=api_settings.AUTH_COOKIE_PATH,
                 secure=api_settings.AUTH_COOKIE_SECURE or None,
                 httponly=True,
-                samesite='Strict',
+                samesite=api_settings.AUTH_COOKIE_SAMESITE,
             )
         return response
 
