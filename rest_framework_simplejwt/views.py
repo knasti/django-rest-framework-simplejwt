@@ -87,7 +87,7 @@ class TokenCookieViewMixin:
                 '{}_refresh'.format(api_settings.AUTH_COOKIE), data['refresh'],
                 expires=self.get_refresh_token_expiration(),
                 domain=api_settings.AUTH_COOKIE_DOMAIN,
-                path=api_settings.AUTH_COOKIE_PATH,
+                path=reverse(self.token_refresh_view_name),
                 secure=api_settings.AUTH_COOKIE_SECURE or None,
                 httponly=True,
                 samesite=api_settings.AUTH_COOKIE_SAMESITE,
