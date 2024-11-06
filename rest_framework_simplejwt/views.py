@@ -2,7 +2,7 @@ from django.utils.module_loading import import_string
 from datetime import datetime
 
 from django.middleware import csrf
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from rest_framework import generics, status
 from rest_framework.request import Request
 from rest_framework.exceptions import NotAuthenticated
