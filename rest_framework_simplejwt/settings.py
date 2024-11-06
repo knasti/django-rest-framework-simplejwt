@@ -44,6 +44,17 @@ DEFAULTS = {
     "SLIDING_TOKEN_REFRESH_SERIALIZER": "rest_framework_simplejwt.serializers.TokenRefreshSlidingSerializer",
     "CHECK_REVOKE_TOKEN": False,
     "REVOKE_TOKEN_CLAIM": "hash_password",
+    # Cookie name. Enables cookies if value is set.
+    'AUTH_COOKIE': None,
+    # A string like "example.com", or None for standard domain cookie.
+    'AUTH_COOKIE_DOMAIN': None,
+    # Whether the auth cookies should be secure (https:// only).
+    'AUTH_COOKIE_SECURE': False,
+    # The path of the auth cookie.
+    'AUTH_COOKIE_PATH': '/',
+    # Whether to set the flag restricting cookie leaks on cross-site requests.
+    # This can be 'Lax', 'Strict', or None to disable the flag.
+    'AUTH_COOKIE_SAMESITE': 'Lax',
 }
 
 IMPORT_STRINGS = (
