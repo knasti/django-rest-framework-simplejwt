@@ -1,3 +1,6 @@
+from importlib import reload
+from unittest.mock import patch
+
 from django.test import TestCase
 
 from rest_framework_simplejwt.models import TokenUser
@@ -10,19 +13,31 @@ class TestTokenUser(TestCase):
     def setUp(self):
         self.token = AuthToken()
         self.token[api_settings.USER_ID_CLAIM] = 42
-        self.token['username'] = 'deep-thought'
-        self.token['some_other_stuff'] = 'arstarst'
+        self.token["username"] = "deep-thought"
+        self.token["some_other_stuff"] = "arstarst"
 
         self.user = TokenUser(self.token)
 
+    def test_type_checking(self):
+        from rest_framework_simplejwt import models
+
+        with patch("typing.TYPE_CHECKING", True):
+            # Reload models, mock type checking
+            reload(models)
+
+            self.assertEqual(models.TYPE_CHECKING, True)
+
+        # Restore origin module without mock
+        reload(models)
+
     def test_username(self):
-        self.assertEqual(self.user.username, 'deep-thought')
+        self.assertEqual(self.user.username, "deep-thought")
 
     def test_is_active(self):
         self.assertTrue(self.user.is_active)
 
     def test_str(self):
-        self.assertEqual(str(self.user), 'TokenUser 42')
+        self.assertEqual(str(self.user), "TokenUser 42")
 
     def test_id(self):
         self.assertEqual(self.user.id, 42)
@@ -36,7 +51,7 @@ class TestTokenUser(TestCase):
 
         self.assertFalse(user.is_staff)
 
-        payload['is_staff'] = True
+        payload["is_staff"] = True
         user = TokenUser(payload)
 
         self.assertTrue(user.is_staff)
@@ -47,7 +62,7 @@ class TestTokenUser(TestCase):
 
         self.assertFalse(user.is_superuser)
 
-        payload['is_superuser'] = True
+        payload["is_superuser"] = True
         user = TokenUser(payload)
 
         self.assertTrue(user.is_superuser)
@@ -60,6 +75,12 @@ class TestTokenUser(TestCase):
         self.assertNotEqual(user1, user2)
         self.assertEqual(user1, user3)
 
+    def test_eq_not_implemented(self):
+        user1 = TokenUser({api_settings.USER_ID_CLAIM: 1})
+        user2 = "user2"
+
+        self.assertFalse(user1 == user2)
+
     def test_hash(self):
         self.assertEqual(hash(self.user), hash(self.user.id))
 
@@ -71,10 +92,10 @@ class TestTokenUser(TestCase):
             self.user.delete()
 
         with self.assertRaises(NotImplementedError):
-            self.user.set_password('arst')
+            self.user.set_password("arst")
 
         with self.assertRaises(NotImplementedError):
-            self.user.check_password('arst')
+            self.user.check_password("arst")
 
     def test_groups(self):
         self.assertFalse(self.user.groups.exists())
@@ -89,13 +110,13 @@ class TestTokenUser(TestCase):
         self.assertEqual(len(self.user.get_all_permissions()), 0)
 
     def test_has_perm(self):
-        self.assertFalse(self.user.has_perm('test_perm'))
+        self.assertFalse(self.user.has_perm("test_perm"))
 
     def test_has_perms(self):
-        self.assertFalse(self.user.has_perms(['test_perm']))
+        self.assertFalse(self.user.has_perms(["test_perm"]))
 
     def test_has_module_perms(self):
-        self.assertFalse(self.user.has_module_perms('test_module'))
+        self.assertFalse(self.user.has_module_perms("test_module"))
 
     def test_is_anonymous(self):
         self.assertFalse(self.user.is_anonymous)
@@ -104,4 +125,7 @@ class TestTokenUser(TestCase):
         self.assertTrue(self.user.is_authenticated)
 
     def test_get_username(self):
-        self.assertEqual(self.user.get_username(), 'deep-thought')
+        self.assertEqual(self.user.get_username(), "deep-thought")
+
+    def test_get_custom_claims_through_backup_getattr(self):
+        self.assertEqual(self.user.some_other_stuff, "arstarst")

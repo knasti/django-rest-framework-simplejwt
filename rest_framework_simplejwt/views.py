@@ -1,10 +1,13 @@
+from django.utils.module_loading import import_string
 from datetime import datetime
 
 from django.middleware import csrf
 from django.utils.translation import ugettext_lazy as _
 from rest_framework import generics, status
+from rest_framework.request import Request
 from rest_framework.exceptions import NotAuthenticated
 from rest_framework.response import Response
+from rest_framework.serializers import Serializer
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
@@ -13,6 +16,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from . import serializers
 from .authentication import AUTH_HEADER_TYPES
 from .exceptions import InvalidToken, TokenError
+from .settings import api_settings
 
 
 class TokenViewBase(generics.GenericAPIView):
@@ -20,16 +24,30 @@ class TokenViewBase(generics.GenericAPIView):
     authentication_classes = ()
 
     serializer_class = None
+    _serializer_class = ""
 
-    www_authenticate_realm = 'api'
+    www_authenticate_realm = "api"
 
-    def get_authenticate_header(self, request):
-        return '{0} realm="{1}"'.format(
+    def get_serializer_class(self) -> Serializer:
+        """
+        If serializer_class is set, use it directly. Otherwise get the class from settings.
+        """
+
+        if self.serializer_class:
+            return self.serializer_class
+        try:
+            return import_string(self._serializer_class)
+        except ImportError:
+            msg = f"Could not import serializer '{self._serializer_class}'"
+            raise ImportError(msg)
+
+    def get_authenticate_header(self, request: Request) -> str:
+        return '{} realm="{}"'.format(
             AUTH_HEADER_TYPES[0],
             self.www_authenticate_realm,
         )
 
-    def post(self, request, *args, **kwargs):
+    def post(self, request: Request, *args, **kwargs) -> Response:
         serializer = self.get_serializer(data=request.data)
 
         try:
@@ -104,7 +122,8 @@ class TokenObtainPairView(TokenCookieViewMixin, TokenViewBase):
     Takes a set of user credentials and returns an access and refresh JSON web
     token pair to prove the authentication of those credentials.
     """
-    serializer_class = serializers.TokenObtainPairSerializer
+
+    _serializer_class = api_settings.TOKEN_OBTAIN_SERIALIZER
 
 
 token_obtain_pair = TokenObtainPairView.as_view()
@@ -115,7 +134,8 @@ class TokenRefreshView(TokenCookieViewMixin, TokenRefreshViewBase):
     Takes a refresh type JSON web token and returns an access type JSON web
     token if the refresh token is valid.
     """
-    serializer_class = serializers.TokenRefreshSerializer
+
+    _serializer_class = api_settings.TOKEN_REFRESH_SERIALIZER
 
     def get_refresh_token_expiration(self):
         if api_settings.ROTATE_REFRESH_TOKENS:
@@ -156,7 +176,8 @@ class TokenObtainSlidingView(SlidingTokenCookieViewMixin, TokenViewBase):
     Takes a set of user credentials and returns a sliding JSON web token to
     prove the authentication of those credentials.
     """
-    serializer_class = serializers.TokenObtainSlidingSerializer
+
+    _serializer_class = api_settings.SLIDING_TOKEN_OBTAIN_SERIALIZER
 
 
 token_obtain_sliding = TokenObtainSlidingView.as_view()
@@ -167,7 +188,8 @@ class TokenRefreshSlidingView(SlidingTokenCookieViewMixin, TokenRefreshViewBase)
     Takes a sliding JSON web token and returns a new, refreshed version if the
     token's refresh period has not expired.
     """
-    serializer_class = serializers.TokenRefreshSlidingSerializer
+
+    _serializer_class = api_settings.SLIDING_TOKEN_REFRESH_SERIALIZER
 
 
 token_refresh_sliding = TokenRefreshSlidingView.as_view()
@@ -178,7 +200,8 @@ class TokenVerifyView(TokenViewBase):
     Takes a token and indicates if it is valid.  This view provides no
     information about a token's fitness for a particular use.
     """
-    serializer_class = serializers.TokenVerifySerializer
+
+    _serializer_class = api_settings.TOKEN_VERIFY_SERIALIZER
 
 
 token_verify = TokenVerifyView.as_view()
@@ -215,3 +238,15 @@ class TokenCookieDeleteView(APIView):
 
 
 token_delete = TokenCookieDeleteView.as_view()
+
+
+class TokenBlacklistView(TokenViewBase):
+    """
+    Takes a token and blacklists it. Must be used with the
+    `rest_framework_simplejwt.token_blacklist` app installed.
+    """
+
+    _serializer_class = api_settings.TOKEN_BLACKLIST_SERIALIZER
+
+
+token_blacklist = TokenBlacklistView.as_view()

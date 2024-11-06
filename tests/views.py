@@ -10,7 +10,7 @@ class TestView(APIView):
     authentication_classes = (authentication.JWTAuthentication,)
 
     def get(self, request):
-        return Response({'foo': 'bar'})
+        return Response({"foo": "bar"})
 
     def post(self, request):
         return Response({'foo': 'bar'})

@@ -12,6 +12,12 @@ directory:
   pip install --upgrade pip setuptools
   pip install -e .[dev]
 
+If you're running a Mac and/or with zsh, you need to escape the brackets:
+
+.. code-block:: bash
+
+  pip install -e .\[dev\]
+
 To run the tests:
 
 .. code-block:: bash
@@ -25,13 +31,11 @@ directory:
 
 .. code-block:: bash
 
+  pyenv install 3.9.x
   pyenv install 3.8.x
-  pyenv install 3.7.x
-  pyenv install 3.6.x
   cat > .python-version <<EOF
+  3.9.x
   3.8.x
-  3.7.x
-  3.6.x
   EOF
 
 Above, the ``x`` in each case should be replaced with the latest corresponding

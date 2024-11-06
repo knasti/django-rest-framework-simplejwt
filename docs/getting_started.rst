@@ -6,9 +6,9 @@ Getting started
 Requirements
 ------------
 
-* Python (3.6, 3.7, 3.8)
-* Django (2.0, 2.1, 2.2, 3.0)
-* Django REST Framework (3.8, 3.9, 3.10, 3.11)
+* Python (3.8, 3.9, 3.10, 3.11, 3.12)
+* Django (3.2, 4.1, 4.2, 5.0)
+* Django REST Framework (3.12, 3.13, 3.14, 3.15)
 
 These are the officially supported python and package versions.  Other versions
 will probably work.  You're free to modify the tox config and see what is
@@ -17,9 +17,33 @@ possible.
 Installation
 ------------
 
-Simple JWT can be installed with pip::
+Simple JWT can be installed with pip:
+
+.. code-block:: console
 
   pip install djangorestframework-simplejwt
+
+
+Cryptographic Dependencies (Optional)
+-------------------------------------
+
+If you are planning on encoding or decoding tokens using certain digital
+signature algorithms (i.e. RSA and ECDSA; visit PyJWT for other algorithms), you will need to install the
+cryptography_ library. This can be installed explicitly, or as a required
+extra in the ``djangorestframework-simplejwt`` requirement:
+
+.. code-block:: console
+
+  pip install djangorestframework-simplejwt[crypto]
+
+The ``djangorestframework-simplejwt[crypto]`` format is recommended in requirements
+files in projects using ``Simple JWT``, as a separate ``cryptography`` requirement
+line may later be mistaken for an unused requirement and removed.
+
+.. _`cryptography`: https://cryptography.io
+
+Project Configuration
+---------------------
 
 Then, your django project must be configured to use the library.  In
 ``settings.py``, add
@@ -60,11 +84,25 @@ signing key:
 
 .. code-block:: python
 
+  from rest_framework_simplejwt.views import TokenVerifyView
+
   urlpatterns = [
       ...
       path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
       ...
   ]
+
+If you wish to use localizations/translations, simply add
+``rest_framework_simplejwt`` to ``INSTALLED_APPS``.
+
+.. code-block:: python
+
+  INSTALLED_APPS = [
+      ...
+      'rest_framework_simplejwt',
+      ...
+  ]
+
 
 Usage
 -----
